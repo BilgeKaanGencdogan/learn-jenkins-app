@@ -10,6 +10,10 @@ pipeline {
                 reuseNode true
                }
               }
+              environment {
+                // Set a writable cache directory within the workspace
+                npm_config_cache = "${WORKSPACE}/.npm-cache"
+            }
             steps {
                 sh '''
                     ls -la
