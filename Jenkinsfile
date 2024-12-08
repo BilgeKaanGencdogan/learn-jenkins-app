@@ -18,16 +18,23 @@ pipeline {
             }
             steps {
                 sh '''
+                    # Remove any pre-existing .npmrc directory to avoid conflicts
+                    [ -d ${WORKSPACE}/.npmrc ] && rm -rf ${WORKSPACE}/.npmrc
+                    
+                    # Create cache directory and .npmrc file
                     mkdir -p ${npm_config_cache}
                     echo 'cache=${npm_config_cache}' > ${WORKSPACE}/.npmrc
                     export NPM_CONFIG_USERCONFIG=${WORKSPACE}/.npmrc
 
-                    ls -la
+                    # Check setup
+                    ls -la ${WORKSPACE}
+                    ls -la ${npm_config_cache}
+                    
+                    # Install dependencies and build
                     node --version
                     npm --version
                     npm ci
                     npm run build
-                    ls -la
                 '''
             }
         }
@@ -43,6 +50,7 @@ pipeline {
                 sh '''
                     export NPM_CONFIG_USERCONFIG=${WORKSPACE}/.npmrc
 
+                    # Run tests
                     test -f build/index.html
                     npm test
                     ls -la
@@ -62,13 +70,16 @@ pipeline {
             }
             steps {
                 sh '''
+                    # Ensure cache and .npmrc
+                    [ -d ${WORKSPACE}/.npmrc ] && rm -rf ${WORKSPACE}/.npmrc
                     mkdir -p ${npm_config_cache}
                     echo 'cache=${npm_config_cache}' > ${WORKSPACE}/.npmrc
                     export NPM_CONFIG_USERCONFIG=${WORKSPACE}/.npmrc
 
-                    npx netlify-cli --version
-                    echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-                    npx netlify deploy --site $NETLIFY_SITE_ID --prod
+                    # Deploy with Netlify CLI
+                    npm install -g netlify-cli
+                    netlify --version
+                    netlify deploy --site $NETLIFY_SITE_ID --prod
                 '''
             }
         }
