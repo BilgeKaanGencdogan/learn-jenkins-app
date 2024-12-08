@@ -18,7 +18,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    mkdir -p ${npm_config_cache} ${WORKSPACE}/.npmrc
+                    mkdir -p ${npm_config_cache}
                     echo 'cache=${npm_config_cache}' > ${WORKSPACE}/.npmrc
                     export NPM_CONFIG_USERCONFIG=${WORKSPACE}/.npmrc
 
@@ -62,7 +62,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    mkdir -p ${npm_config_cache} ${WORKSPACE}/.npmrc
+                    mkdir -p ${npm_config_cache}
                     echo 'cache=${npm_config_cache}' > ${WORKSPACE}/.npmrc
                     export NPM_CONFIG_USERCONFIG=${WORKSPACE}/.npmrc
 
