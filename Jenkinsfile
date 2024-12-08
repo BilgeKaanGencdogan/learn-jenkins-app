@@ -44,21 +44,26 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    npm install netlify-cli
-                    node_modules/.bin/netlify --version
-                    echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-                '''
-            }
+      stage('Deploy') {
+    agent {
+        docker {
+            image 'node:18-alpine'
+            reuseNode true
         }
+    }
+    environment {
+        npm_config_cache = "${WORKSPACE}/.npm-cache" // Ensures npm uses a writable cache
+    }
+    steps {
+        sh '''
+            mkdir -p ${npm_config_cache}
+            npm install netlify-cli
+            node_modules/.bin/netlify --version
+            echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+        '''
+    }
+}
+
     }
 
     post {
