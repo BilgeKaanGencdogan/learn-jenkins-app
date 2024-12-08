@@ -14,11 +14,14 @@ pipeline {
                 }
             }
             environment {
-                npm_config_cache = "${WORKSPACE}/.npm-cache" // Custom npm cache directory
+                npm_config_cache = "${WORKSPACE}/.npm-cache"
             }
             steps {
                 sh '''
-                    mkdir -p ${npm_config_cache} # Ensure cache directory exists
+                    mkdir -p ${npm_config_cache} ${WORKSPACE}/.npmrc
+                    echo 'cache=${npm_config_cache}' > ${WORKSPACE}/.npmrc
+                    export NPM_CONFIG_USERCONFIG=${WORKSPACE}/.npmrc
+
                     ls -la
                     node --version
                     npm --version
@@ -38,6 +41,8 @@ pipeline {
             }
             steps {
                 sh '''
+                    export NPM_CONFIG_USERCONFIG=${WORKSPACE}/.npmrc
+
                     test -f build/index.html
                     npm test
                     ls -la
@@ -53,12 +58,14 @@ pipeline {
                 }
             }
             environment {
-                npm_config_cache = "${WORKSPACE}/.npm-cache" // Ensures npm uses a writable cache
+                npm_config_cache = "${WORKSPACE}/.npm-cache"
             }
             steps {
                 sh '''
-                    mkdir -p ${npm_config_cache} # Ensure cache directory exists
-                    npm config set cache ${npm_config_cache} # Set npm to use the custom cache
+                    mkdir -p ${npm_config_cache} ${WORKSPACE}/.npmrc
+                    echo 'cache=${npm_config_cache}' > ${WORKSPACE}/.npmrc
+                    export NPM_CONFIG_USERCONFIG=${WORKSPACE}/.npmrc
+
                     npx netlify-cli --version
                     echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
                     npx netlify deploy --site $NETLIFY_SITE_ID --prod
