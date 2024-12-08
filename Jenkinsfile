@@ -51,12 +51,12 @@ pipeline {
             reuseNode true
         }
     }
-    environment {
-        npm_config_cache = "${WORKSPACE}/.npm-cache" // Ensures npm uses a writable cache
-    }
+    // environment {
+    //     npm_config_cache = "${WORKSPACE}/.npm-cache" // Ensures npm uses a writable cache
+    // }
     steps {
         sh '''
-            mkdir -p ${npm_config_cache}
+            
             npm install netlify-cli -g
             node_modules/.bin/netlify --version
             echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
