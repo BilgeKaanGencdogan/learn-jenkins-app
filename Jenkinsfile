@@ -3,6 +3,8 @@ pipeline {
 
     environment {
         NETLIFY_SITE_ID = 'f64217ac-7042-4c89-a7c2-727934a56cab'
+        npm_config_cache = "${WORKSPACE}/.npm-cache"
+        NPM_CONFIG_USERCONFIG = "${WORKSPACE}/.npmrc"
     }
 
     stages {
@@ -13,23 +15,12 @@ pipeline {
                     reuseNode true
                 }
             }
-            environment {
-                npm_config_cache = "${WORKSPACE}/.npm-cache"
-            }
             steps {
                 sh '''
-                    # Remove any pre-existing .npmrc directory to avoid conflicts
-                    [ -d ${WORKSPACE}/.npmrc ] && rm -rf ${WORKSPACE}/.npmrc
-                    
-                    # Create cache directory and .npmrc file
+                    # Setup npm cache
                     mkdir -p ${npm_config_cache}
-                    echo 'cache=${npm_config_cache}' > ${WORKSPACE}/.npmrc
-                    export NPM_CONFIG_USERCONFIG=${WORKSPACE}/.npmrc
+                    echo 'cache=${npm_config_cache}' > ${NPM_CONFIG_USERCONFIG}
 
-                    # Check setup
-                    ls -la ${WORKSPACE}
-                    ls -la ${npm_config_cache}
-                    
                     # Install dependencies and build
                     node --version
                     npm --version
@@ -48,12 +39,9 @@ pipeline {
             }
             steps {
                 sh '''
-                    export NPM_CONFIG_USERCONFIG=${WORKSPACE}/.npmrc
-
                     # Run tests
                     test -f build/index.html
-                    npm test
-                    ls -la
+                    npm test -- --detectOpenHandles
                 '''
             }
         }
@@ -63,23 +51,18 @@ pipeline {
                 docker {
                     image 'node:18-alpine'
                     reuseNode true
+                    args '--user 0'
                 }
-            }
-            environment {
-                npm_config_cache = "${WORKSPACE}/.npm-cache"
             }
             steps {
                 sh '''
-                    # Ensure cache and .npmrc
-                    [ -d ${WORKSPACE}/.npmrc ] && rm -rf ${WORKSPACE}/.npmrc
+                    # Setup npm cache
                     mkdir -p ${npm_config_cache}
-                    echo 'cache=${npm_config_cache}' > ${WORKSPACE}/.npmrc
-                    export NPM_CONFIG_USERCONFIG=${WORKSPACE}/.npmrc
+                    echo 'cache=${npm_config_cache}' > ${NPM_CONFIG_USERCONFIG}
 
-                    # Deploy with Netlify CLI
-                    npm install -g netlify-cli
-                    netlify --version
-                    netlify deploy --site $NETLIFY_SITE_ID --prod
+                    # Install and use Netlify CLI
+                    npm install netlify-cli
+                    npx netlify deploy --site $NETLIFY_SITE_ID --prod
                 '''
             }
         }
@@ -88,6 +71,7 @@ pipeline {
     post {
         always {
             junit 'test-results/junit.xml'
+            archiveArtifacts artifacts: 'build/**/*'
         }
     }
 }
