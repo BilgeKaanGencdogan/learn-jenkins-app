@@ -2,19 +2,18 @@ pipeline {
     agent any
 
     environment {
-        NETLIFY_SITE_ID= 'f64217ac-7042-4c89-a7c2-727934a56cab'
+        NETLIFY_SITE_ID = 'f64217ac-7042-4c89-a7c2-727934a56cab'
     }
+
     stages {
         stage('Build') {
             agent {
-                docker 
-                { 
-                image 'node:18-alpine'
-                reuseNode true
-               }
-              }
-              environment {
-                // Set a writable cache directory within the workspace
+                docker { 
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            environment {
                 npm_config_cache = "${WORKSPACE}/.npm-cache"
             }
             steps {
@@ -23,49 +22,48 @@ pipeline {
                     node --version
                     npm --version
                     npm ci
-                    npm run build 
-                    ls -la 
+                    npm run build
+                    ls -la
                 '''
             }
         }
 
-        stage('Test'){
+        stage('Test') {
             agent {
-                docker 
-                { 
-                image 'node:18-alpine'
-                reuseNode true
-               }
-              }
-            steps{
+                docker { 
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
                 sh '''
-                test -f build/index.html
-                npm test
-                ls -la
+                    test -f build/index.html
+                    npm test
+                    ls -la
                 '''
             }
+        }
 
+        stage('Deploy') {
+            agent {
+                docker { 
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    npm install netlify-cli
+                    node_modules/.bin/netlify --version
+                    echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+                '''
+            }
         }
     }
 
     post {
-        always{
+        always {
             junit 'test-results/junit.xml'
-        }
-    }
-    stage('Deploy'){
-        agent{
-            docker{
-                image 'node:18-alpine'
-                reuseNode true
-            }
-        }
-        steps{
-            sh '''
-            npm install netlify-cli
-            node_modules/.bin/netlify --version
-            echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-            '''
         }
     }
 }
