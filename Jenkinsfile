@@ -46,26 +46,19 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                    args '--user 0'
-                }
-            }
-            steps {
+       stage('Deploy') {
+    steps {
+        script {
+            withEnv(["NETLIFY_AUTH_TOKEN=${env.NETLIFY_AUTH_TOKEN}"]) {
                 sh '''
-                    # Setup npm cache
-                    mkdir -p ${npm_config_cache}
-                    echo 'cache=${npm_config_cache}' > ${NPM_CONFIG_USERCONFIG}
-
-                    # Install and use Netlify CLI
                     npm install netlify-cli
-                    npx netlify deploy --site $NETLIFY_SITE_ID --prod
+                    npx netlify deploy --site f64217ac-7042-4c89-a7c2-727934a56cab --prod --debug
                 '''
             }
         }
+    }
+}
+
     }
 
     post {
