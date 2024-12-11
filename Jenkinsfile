@@ -2,69 +2,70 @@ pipeline {
     agent any
 
     environment {
-        NETLIFY_SITE_ID = 'f64217ac-7042-4c89-a7c2-727934a56cab'
-        npm_config_cache = "${WORKSPACE}/.npm-cache"
-        NPM_CONFIG_USERCONFIG = "${WORKSPACE}/.npmrc"
+        NETLIFY_SITE_ID= 'f64217ac-7042-4c89-a7c2-727934a56cab'
     }
-
     stages {
         stage('Build') {
             agent {
-                docker { 
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
+                docker 
+                { 
+                image 'node:18-alpine'
+                reuseNode true
+               }
+              }
+              environment {
+                // Set a writable cache directory within the workspace
+                npm_config_cache = "${WORKSPACE}/.npm-cache"
             }
             steps {
                 sh '''
-                    # Setup npm cache
-                    mkdir -p ${npm_config_cache}
-                    echo 'cache=${npm_config_cache}' > ${NPM_CONFIG_USERCONFIG}
-
-                    # Install dependencies and build
+                    ls -la
                     node --version
                     npm --version
                     npm ci
-                    npm run build
+                    npm run build 
+                    ls -la 
                 '''
             }
         }
 
-        stage('Test') {
+        stage('Test'){
             agent {
-                docker { 
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
+                docker 
+                { 
+                image 'node:18-alpine'
+                reuseNode true
+               }
+              }
+            steps{
                 sh '''
-                    # Run tests
-                    test -f build/index.html
-                    npm test -- --detectOpenHandles
+                test -f build/index.html
+                npm test
+                ls -la
                 '''
             }
-        }
 
-       stage('Deploy') {
-    steps {
-        script {
-            withEnv(["NETLIFY_AUTH_TOKEN=${env.NETLIFY_AUTH_TOKEN}"]) {
-                sh '''
-                    npm install netlify-cli
-                    npx netlify deploy --site f64217ac-7042-4c89-a7c2-727934a56cab --prod --debug
-                '''
-            }
         }
-    }
-}
-
     }
 
     post {
-        always {
+        always{
             junit 'test-results/junit.xml'
-            archiveArtifacts artifacts: 'build/**/*'
+        }
+    }
+    stage('Deploy'){
+        agent{
+            docker{
+                image 'node:18-alpine'
+                reuseNode true
+            }
+        }
+        steps{
+            sh '''
+            npm install netlify-cli
+            node_modules/.bin/netlify --version
+            echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+            '''
         }
     }
 }
