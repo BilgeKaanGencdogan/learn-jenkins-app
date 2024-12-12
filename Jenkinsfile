@@ -23,7 +23,9 @@ pipeline {
                     npm ci
                     npm run build
                     ls -la
+                    echo "NETLIFY_AUTH_TOKEN=${NETLIFY_AUTH_TOKEN:0:4}****"
                 '''
+
             }
         }
 
