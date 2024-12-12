@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         NETLIFY_SITE_ID = 'f64217ac-7042-4c89-a7c2-727934a56cab'
-        NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+       // NETLIFY_AUTH_TOKEN = credentials('netlify-token')
     }
 
     stages {
@@ -23,7 +23,7 @@ pipeline {
                     npm ci
                     npm run build
                     ls -la
-                    echo "NETLIFY_AUTH_TOKEN=${NETLIFY_AUTH_TOKEN:0:4}****"
+                   
                 '''
 
             }
