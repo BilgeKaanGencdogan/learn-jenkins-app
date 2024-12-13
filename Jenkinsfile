@@ -60,7 +60,6 @@ pipeline {
 
                     steps {
                         sh '''
-                            mkdir -p /var/lib/jenkins/workspace/learn-jenkins-app/playwright-report
                             npm install serve
                             node_modules/.bin/serve -s build &
                             sleep 10
