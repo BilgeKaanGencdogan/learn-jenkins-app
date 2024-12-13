@@ -50,5 +50,9 @@
     "titleTemplate": "{classname}-{title}",
     "ancestorSeparator": " › ",
     "usePathForSuiteName": "true"
-  }
+  },
+  "jest": {
+    "testResultsProcessor": "jest-junit",
+    "coverageReporters": ["json", "lcov", "text", "clover"]
+}
 }
