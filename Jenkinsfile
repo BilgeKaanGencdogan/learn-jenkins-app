@@ -7,27 +7,25 @@ pipeline {
     }
 
     stages {
-
-       stage('Build') {
-    agent {
-        docker {
-            image 'node:18-alpine'
-            args '-u root'
-            reuseNode true
+        stage('Build') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    args '-u root'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    ls -la
+                    node --version
+                    npm --version
+                    npm ci --unsafe-perm
+                    npm run build
+                    ls -la
+                '''
+            }
         }
-    }
-    steps {
-        sh '''
-            ls -la
-            node --version
-            npm --version
-            npm ci --unsafe-perm
-            npm run build
-            ls -la
-        '''
-    }
-}
-
 
         stage('Tests') {
             parallel {
