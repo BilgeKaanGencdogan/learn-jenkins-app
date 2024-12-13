@@ -52,12 +52,19 @@
     "usePathForSuiteName": "true"
   },
   "jest": {
-    "testResultsProcessor": "jest-junit",
-    "coverageReporters": [
-      "json",
-      "lcov",
-      "text",
-      "clover"
-    ]
-  }
+  "reporters": [
+    "default",
+    ["jest-junit", { 
+      "outputDirectory": "jest-results", 
+      "outputName": "junit.xml" 
+    }]
+  ],
+  "coverageReporters": [
+    "json",
+    "lcov",
+    "text",
+    "clover"
+  ]
+}
+
 }
