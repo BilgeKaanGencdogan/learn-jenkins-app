@@ -77,10 +77,7 @@ pipeline {
             steps {
                 sh '''
                     
-                    chown -R jenkins:jenkins /var/lib/jenkins/workspace/learn-jenkins-app/node_modules
-                    chmod -R 777 /var/lib/jenkins/workspace/learn-jenkins-app/node_modules
-                    
-                    npm install --unsafe-perm=true netlify-cli
+                    npm install -g netlify-cli
                     node_modules/.bin/netlify --version
                     echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
