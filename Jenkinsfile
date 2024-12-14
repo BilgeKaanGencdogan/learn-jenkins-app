@@ -76,7 +76,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    apk add --no-cache coreutils shadow
+                    
                     chown -R jenkins:jenkins /var/lib/jenkins/workspace/learn-jenkins-app/node_modules
                     chmod -R 777 /var/lib/jenkins/workspace/learn-jenkins-app/node_modules
                     
