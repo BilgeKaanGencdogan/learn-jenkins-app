@@ -69,7 +69,7 @@ pipeline {
             agent {
                 docker {
                     image 'node:18-alpine'
-                    args '--user root' // Run container as root
+                     args '--user 992:989' // Run container as root
                     reuseNode true
                 }
             }
