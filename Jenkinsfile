@@ -77,7 +77,8 @@ pipeline {
     }
     steps {
         sh '''
-
+              apk add --no-cache coreutils
+              
              # Fix permissions on the workspace and node_modules
             sudo chown -R jenkins:jenkins /var/lib/jenkins/workspace/learn-jenkins-app
             sudo chmod -R 777 /var/lib/jenkins/workspace/learn-jenkins-app
