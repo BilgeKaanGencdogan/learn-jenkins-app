@@ -77,6 +77,11 @@ pipeline {
     }
     steps {
         sh '''
+
+             # Fix permissions on the workspace and node_modules
+            sudo chown -R jenkins:jenkins /var/lib/jenkins/workspace/learn-jenkins-app
+            sudo chmod -R 777 /var/lib/jenkins/workspace/learn-jenkins-app
+
             # Create a writable npm cache directory
             mkdir -p .npm-cache
             chmod -R 777 .npm-cache
