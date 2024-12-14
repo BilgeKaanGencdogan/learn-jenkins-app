@@ -16,8 +16,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --testResultsProcessor=\"jest-junit\"",
-    "test:ci": "react-scripts test --ci --coverage --reporters=default --reporters=jest-junit",
+    "test": "react-scripts test",
+    "test:ci":"npm run test -- --coverage --ci --testResultsProcessor=\"jest-junit\"",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -54,21 +54,12 @@
     "usePathForSuiteName": "true"
   },
   "jest": {
-    "reporters": [
-      "default",
-      [
-        "jest-junit",
-        {
-          "outputDirectory": "jest-results",
-          "outputName": "junit.xml"
-        }
-      ]
-    ],
-    "coverageReporters": [
-      "json",
-      "lcov",
-      "text",
-      "clover"
-    ]
-  }
+  "coverageReporters": [
+    "json",
+    "lcov",
+    "text",
+    "clover"
+  ]
+}
+
 }
