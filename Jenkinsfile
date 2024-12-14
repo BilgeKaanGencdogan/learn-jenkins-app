@@ -90,15 +90,9 @@ pipeline {
                 script {
                     // Install Netlify CLI and deploy
                     sh '''
-                        # Install coreutils for chown and chmod
-                        apt-get install -y coreutils
-
-                        # Fix permissions on the workspace and node_modules
-                        chown -R jenkins:jenkins /var/lib/jenkins/workspace/learn-jenkins-app
-                        chmod -R 777 /var/lib/jenkins/workspace/learn-jenkins-app
 
                         # Install netlify-cli locally
-                        npm install --cache .npm-cache --unsafe-perm netlify-cli
+                        npm install netlify-cli -g
 
                         # Deploy using netlify-cli
                         node_modules/.bin/netlify --version
@@ -118,3 +112,7 @@ pipeline {
         }
     }
 }
+
+
+
+
