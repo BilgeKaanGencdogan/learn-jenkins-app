@@ -20,7 +20,7 @@ pipeline {
             // Install Node.js 18.x on Rocky Linux
             sh '''
                 # Enable EPEL repository
-                sudo dnf install -y epel-release
+                dnf install -y epel-release
 
                 # Install Node.js 18.x from NodeSource
                 curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
