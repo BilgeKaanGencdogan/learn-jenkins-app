@@ -62,29 +62,34 @@ pipeline {
                     }
                 }
 
-                stage('E2E') {
-                    agent {
-                        docker {
-                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-                            reuseNode true
-                        }
-                    }
-                    steps {
-                        sh 'npm install'
-                        sh '''
-                            npm install serve
-                            node_modules/.bin/serve -s build &
-                            sleep 10
-                            npx playwright test --reporter=html --output=playwright-report
-                        '''
-                    }
-
-                    post {
-                        always {
-                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
-                        }
-                    }
+               stage('E2E') {
+                agent {
+                     docker {
+                image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                 reuseNode true
                 }
+         }
+    steps {
+        // Clean and install dependencies
+        sh 'rm -rf node_modules' // Ensure no stale dependencies
+        sh 'npm ci'  // Use npm ci for clean, reproducible installs
+
+        // Serve the build and run Playwright tests
+        sh '''
+            node_modules/.bin/serve -s build &
+            sleep 10
+            npx playwright test --reporter=html --output=playwright-report
+        '''
+    }
+
+    post {
+        always {
+            // Publish Playwright report
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+        }
+    }
+}
+
             }
         }
 
