@@ -71,14 +71,14 @@ pipeline {
          }
     steps {
         // Clean and install dependencies
-        sh 'rm -rf node_modules' // Ensure no stale dependencies
-        sh 'npm ci'  // Use npm ci for clean, reproducible installs
+        sh 'sudo rm -rf node_modules' // Ensure no stale dependencies
+        sh 'sudo npm ci'  // Use npm ci for clean, reproducible installs
 
         // Serve the build and run Playwright tests
         sh '''
-            node_modules/.bin/serve -s build &
-            sleep 10
-            npx playwright test --reporter=html --output=playwright-report
+            sudo node_modules/.bin/serve -s build &
+            sudo sleep 10
+            sudo npx playwright test --reporter=html --output=playwright-report
         '''
     }
 
