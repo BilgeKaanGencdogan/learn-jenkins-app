@@ -7,6 +7,38 @@ pipeline {
     }
 
     stages {
+        stage('Install Retire.js') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    args '--user root'  // Make sure the container is running as root
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    # Install retire.js globally
+                    npm install -g retire
+                '''
+            }
+        }
+
+        stage('Retire.js Vulnerability Check') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    args '--user root'  // Make sure the container is running as root
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    # Run Retire.js to check for outdated or vulnerable libraries
+                    retire --path . || exit 1
+                '''
+            }
+        }
+
         stage('Build') {
             agent {
                 docker {
@@ -69,7 +101,7 @@ pipeline {
             agent {
                 docker {
                     image 'node:18-alpine'
-                     args '--user 992:989' // Run container as root
+                    args '--user 992:989' // Run container as root
                     reuseNode true
                 }
             }
