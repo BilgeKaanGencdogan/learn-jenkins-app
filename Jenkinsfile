@@ -6,16 +6,14 @@ pipeline {
         NETLIFY_AUTH_TOKEN = credentials('token-netlify')
     }
 
-    stages 
-    {
+    stages {
         stage('Build') {
             agent {
                 docker {
                     image 'node:18-alpine'
-                    args '-u root'
+                    args '--user root'  // Make sure the container is running as root
                     reuseNode true
                 }
-                // dockerfile true
             }
             steps {
                 sh '''
@@ -67,38 +65,38 @@ pipeline {
             }
         }
 
-       stage('Deploy') {
-    agent {
-        docker {
-            image 'node:18-alpine'
-            args '--user 992:989' // Replace with actual UID:GID
-            reuseNode true
+        stage('Deploy') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    args '--user root' // Run container as root
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    # Install coreutils to get chown and chmod
+                    apk add --no-cache coreutils
+
+                    # Fix permissions on the workspace and node_modules
+                    chown -R jenkins:jenkins /var/lib/jenkins/workspace/learn-jenkins-app
+                    chmod -R 777 /var/lib/jenkins/workspace/learn-jenkins-app
+
+                    # Create a writable npm cache directory
+                    mkdir -p .npm-cache
+                    chmod -R 777 .npm-cache
+
+                    # Install netlify-cli locally
+                    npm install --cache .npm-cache --unsafe-perm netlify-cli
+
+                    # Deploy using netlify-cli
+                    node_modules/.bin/netlify --version
+                    echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+                    node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build --prod
+                '''
+            }
         }
-    }
-    steps {
-        sh '''
-              apk add --no-cache coreutils
-              
-             # Fix permissions on the workspace and node_modules
-            sudo chown -R jenkins:jenkins /var/lib/jenkins/workspace/learn-jenkins-app
-            sudo chmod -R 777 /var/lib/jenkins/workspace/learn-jenkins-app
-
-            # Create a writable npm cache directory
-            mkdir -p .npm-cache
-            chmod -R 777 .npm-cache
-
-            # Install netlify-cli locally
-            npm install --cache .npm-cache --unsafe-perm netlify-cli
-
-            # Deploy using netlify-cli
-            node_modules/.bin/netlify --version
-            echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-            node_modules/.bin/netlify status
-            node_modules/.bin/netlify deploy --dir=build --prod
-        '''
-    }
-}
-
     }
 
     post {
