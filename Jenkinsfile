@@ -10,12 +10,12 @@ pipeline {
     {
         stage('Build') {
             agent {
-                // docker {
-                //     image 'node:18-alpine'
-                //     args '-u root'
-                //     reuseNode true
-                // }
-                dockerfile true
+                docker {
+                    image 'node:18-alpine'
+                    args '-u root'
+                    reuseNode true
+                }
+                // dockerfile true
             }
             steps {
                 sh '''
@@ -67,24 +67,32 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    
-                    npm install -g netlify-cli
-                    node_modules/.bin/netlify --version
-                    echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod
-                '''
-            }
+       stage('Deploy') {
+    agent {
+        docker {
+            image 'node:18-alpine'
+            args '--user 992:989' // Replace with actual UID:GID
+            reuseNode true
         }
+    }
+    steps {
+        sh '''
+            # Create a writable npm cache directory
+            mkdir -p .npm-cache
+            chmod -R 777 .npm-cache
+
+            # Install netlify-cli locally
+            npm install --cache .npm-cache --unsafe-perm netlify-cli
+
+            # Deploy using netlify-cli
+            node_modules/.bin/netlify --version
+            echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+            node_modules/.bin/netlify status
+            node_modules/.bin/netlify deploy --dir=build --prod
+        '''
+    }
+}
+
     }
 
     post {
