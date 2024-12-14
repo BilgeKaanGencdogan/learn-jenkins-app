@@ -24,7 +24,7 @@ pipeline {
 
                 # Install Node.js 18.x from NodeSource
                 curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
-                sudo dnf install -y nodejs
+                dnf install -y nodejs
 
                 # Verify the installation
                 node --version
