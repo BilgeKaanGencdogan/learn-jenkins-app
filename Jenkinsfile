@@ -7,55 +7,53 @@ pipeline {
     }
 
     stages {
-        stage('Install Retire.js') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    args '--user root'  // Make sure the container is running as root
-                    reuseNode true
-                }
-            }
+        stage('Checkout') {
             steps {
-                sh '''
-                    # Install retire.js globally
-                    npm install -g retire
-                '''
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // Install Node.js, npm, and Retire.js
+                    sh '''
+                        # Install Node.js (this mimics the node:18-alpine environment)
+                        curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+                        apt-get install -y nodejs
+
+                        # Verify the installation
+                        node --version
+                        npm --version
+
+                        # Install Retire.js globally
+                        npm install -g retire
+
+                        # Verify Retire.js installation
+                        which retire
+                    '''
+                }
             }
         }
 
         stage('Retire.js Vulnerability Check') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    args '--user root'  // Make sure the container is running as root
-                    reuseNode true
-                }
-            }
             steps {
-                sh '''
-                    # Run Retire.js to check for outdated or vulnerable libraries
-                    retire --path . || exit 1
-                '''
+                script {
+                    // Run Retire.js to check for vulnerabilities
+                    sh 'retire --path . || exit 1'
+                }
             }
         }
 
         stage('Build') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    args '--user root'  // Make sure the container is running as root
-                    reuseNode true
-                }
-            }
             steps {
-                sh '''
-                    ls -la
-                    node --version
-                    npm --version
-                    npm ci --unsafe-perm
-                    npm run build
-                    ls -la
-                '''
+                script {
+                    // Install project dependencies and build the project
+                    sh '''
+                        npm ci --unsafe-perm
+                        npm run build
+                    '''
+                }
             }
         }
 
@@ -74,18 +72,8 @@ pipeline {
         stage('Tests') {
             parallel {
                 stage('Unit tests') {
-                    agent {
-                        docker {
-                            image 'node:18-alpine'
-                            reuseNode true
-                        }
-                    }
-
                     steps {
-                        sh '''
-                            #test -f build/index.html
-                            npm run test:ci
-                        '''
+                        sh 'npm run test:ci'
                     }
 
                     post {
@@ -98,35 +86,27 @@ pipeline {
         }
 
         stage('Deploy') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    args '--user 992:989' // Run container as root
-                    reuseNode true
-                }
-            }
             steps {
-                sh '''
-                    # Install coreutils to get chown and chmod
-                    apk add --no-cache coreutils
+                script {
+                    // Install Netlify CLI and deploy
+                    sh '''
+                        # Install coreutils for chown and chmod
+                        apt-get install -y coreutils
 
-                    # Fix permissions on the workspace and node_modules
-                    chown -R jenkins:jenkins /var/lib/jenkins/workspace/learn-jenkins-app
-                    chmod -R 777 /var/lib/jenkins/workspace/learn-jenkins-app
+                        # Fix permissions on the workspace and node_modules
+                        chown -R jenkins:jenkins /var/lib/jenkins/workspace/learn-jenkins-app
+                        chmod -R 777 /var/lib/jenkins/workspace/learn-jenkins-app
 
-                    # Create a writable npm cache directory
-                    mkdir -p .npm-cache
-                    chmod -R 777 .npm-cache
+                        # Install netlify-cli locally
+                        npm install --cache .npm-cache --unsafe-perm netlify-cli
 
-                    # Install netlify-cli locally
-                    npm install --cache .npm-cache --unsafe-perm netlify-cli
-
-                    # Deploy using netlify-cli
-                    node_modules/.bin/netlify --version
-                    echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod
-                '''
+                        # Deploy using netlify-cli
+                        node_modules/.bin/netlify --version
+                        echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+                        node_modules/.bin/netlify status
+                        node_modules/.bin/netlify deploy --dir=build --prod
+                    '''
+                }
             }
         }
     }
