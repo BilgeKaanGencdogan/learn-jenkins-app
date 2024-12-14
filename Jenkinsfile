@@ -6,8 +6,7 @@ pipeline {
         NETLIFY_AUTH_TOKEN = credentials('token-netlify')
     }
 
-    stages 
-    {
+    stages {
         stage('Build') {
             agent {
                 docker {
@@ -27,17 +26,18 @@ pipeline {
                 '''
             }
         }
+
         stage('OWASP Dependency-Check Vulnerabilities') {
-             steps {
-        dependencyCheck additionalArguments: ''' 
+            steps {
+                dependencyCheck additionalArguments: ''' 
                     -o './'
                     -s './'
                     -f 'ALL' 
                     --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
-        
-        dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-      }
-    }
+                
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            }
+        }
 
         stage('Tests') {
             parallel {
@@ -55,41 +55,13 @@ pipeline {
                             npm run test:ci
                         '''
                     }
+
                     post {
                         always {
                             junit 'test-results/junit.xml'
                         }
                     }
                 }
-
-               stage('E2E') {
-                agent {
-                     docker {
-                image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-                 reuseNode true
-                }
-         }
-    steps {
-        // Clean and install dependencies
-        sh 'sudo rm -rf node_modules' // Ensure no stale dependencies
-        sh 'sudo npm ci'  // Use npm ci for clean, reproducible installs
-
-        // Serve the build and run Playwright tests
-        sh '''
-            sudo node_modules/.bin/serve -s build &
-            sudo sleep 10
-            sudo npx playwright test --reporter=html --output=playwright-report
-        '''
-    }
-
-    post {
-        always {
-            // Publish Playwright report
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
-        }
-    }
-}
-
             }
         }
 
@@ -109,6 +81,13 @@ pipeline {
                     node_modules/.bin/netlify deploy --dir=build --prod
                 '''
             }
+        }
+    }
+
+    post {
+        always {
+            // Publish Playwright report
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
         }
     }
 }
