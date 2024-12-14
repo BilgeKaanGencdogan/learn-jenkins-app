@@ -6,7 +6,8 @@ pipeline {
         NETLIFY_AUTH_TOKEN = credentials('token-netlify')
     }
 
-    stages {
+    stages 
+    {
         stage('Build') {
             agent {
                 docker {
@@ -26,6 +27,17 @@ pipeline {
                 '''
             }
         }
+        stage('OWASP Dependency-Check Vulnerabilities') {
+             steps {
+        dependencyCheck additionalArguments: ''' 
+                    -o './'
+                    -s './'
+                    -f 'ALL' 
+                    --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+        
+        dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+      }
+    }
 
         stage('Tests') {
             parallel {
