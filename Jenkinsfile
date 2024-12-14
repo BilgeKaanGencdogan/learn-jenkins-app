@@ -10,11 +10,12 @@ pipeline {
     {
         stage('Build') {
             agent {
-                docker {
-                    image 'node:18-alpine'
-                    args '-u root'
-                    reuseNode true
-                }
+                // docker {
+                //     image 'node:18-alpine'
+                //     args '-u root'
+                //     reuseNode true
+                // }
+                dockerfile true
             }
             steps {
                 sh '''
