@@ -6,7 +6,8 @@ pipeline {
         NETLIFY_AUTH_TOKEN = credentials('token-netlify')
     }
 
-    stages {
+    stages 
+    {
         stage('Build') {
             agent {
                 docker {
