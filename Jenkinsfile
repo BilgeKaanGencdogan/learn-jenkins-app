@@ -14,28 +14,31 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    // Install Node.js, npm, and Retire.js
-                    sh '''
-                        # Install Node.js (this mimics the node:18-alpine environment)
-                        curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-                        apt-get install -y nodejs
+      stage('Install Dependencies') {
+    steps {
+        script {
+            // Install Node.js 18.x on Rocky Linux
+            sh '''
+                # Enable EPEL repository
+                sudo dnf install -y epel-release
 
-                        # Verify the installation
-                        node --version
-                        npm --version
+                # Install Node.js 18.x from NodeSource
+                curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
+                sudo dnf install -y nodejs
 
-                        # Install Retire.js globally
-                        npm install -g retire
+                # Verify the installation
+                node --version
+                npm --version
 
-                        # Verify Retire.js installation
-                        which retire
-                    '''
-                }
-            }
+                # Install Retire.js globally
+                npm install -g retire
+
+                # Verify Retire.js installation
+                which retire
+            '''
         }
+    }
+}
 
         stage('Retire.js Vulnerability Check') {
             steps {
