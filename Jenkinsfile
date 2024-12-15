@@ -24,23 +24,23 @@ pipeline {
             }
         }
 
-        stage('Install Bearer CLI') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    args '--user root'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                     apk add --no-cache curl git
-                    curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh
-                   ls -la ./bin
-                    ./bin/bearer scan .
-                '''
-            }
-        }
+        // stage('Install Bearer CLI') {
+        //     agent {
+        //         docker {
+        //             image 'node:18-alpine'
+        //             args '--user root'
+        //             reuseNode true
+        //         }
+        //     }
+        //     steps {
+        //         sh '''
+        //              apk add --no-cache curl git
+        //             curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh
+        //             ls -la ./bin
+        //             ./bin/bearer scan .
+        //         '''
+        //     }
+        // }
 
         stage('Build') {
             agent {
@@ -110,6 +110,20 @@ pipeline {
                 }
             }
             steps {
+                    // sh '''
+                    //  # Install netlify-cli locally in the project
+                    // npm install netlify-cli --unsafe-perm
+
+                    // # Verify installation
+                    // node_modules/.bin/netlify --version
+
+                    // # Deploy using netlify-cli
+                    // echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+                    // netlify login
+                    // node_modules/.bin/netlify status
+                    // node_modules/.bin/netlify deploy --dir=build --prod
+                    // '''
+
                 sh '''
                     echo "Deploying...."
                     '''
