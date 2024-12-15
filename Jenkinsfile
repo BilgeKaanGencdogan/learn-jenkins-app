@@ -153,19 +153,25 @@ pipeline {
     //     }
     // }
 
-      post {
-        always {
-            // Create an issue on GitHub if the build fails
+     post 
+     {
+     always {
+        script {
             if (currentBuild.result == 'FAILURE') {
-                githubIssue(
-                    repo: 'https://github.com/BilgeKaanGencdogan/learn-jenkins-app',
-                    branch: 'main',
-                    title: 'Build failed',
-                    body: 'The build failed with the following error: ${currentBuild.result}',
-                    labels: ['build-failure'],
-                    assignee: 'BilgeKaanGencdogan'
-                )
+                // Logic to create a GitHub issue
+                sh """
+                curl -X POST -H "Authorization: token ${env.GITHUB_TOKEN}" \
+                     -H "Accept: application/vnd.github+json" \
+                     https://api.github.com/repos/BilgeKaanGencdogan/learn-jenkins-app/issues \
+                     -d '{
+                            "title": "Build failed",
+                            "body": "The build failed with the following error: ${currentBuild.result}",
+                            "labels": ["build-failure"]
+                         }'
+                """
             }
         }
     }
+}
+
 }
