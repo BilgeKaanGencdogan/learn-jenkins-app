@@ -19,10 +19,11 @@ pipeline {
                 sh '''
                     # Install retire.js globally
                     npm install -g retire
+                    retire
                 '''
             }
         }
-        stage('Retire.js Vulnerability Check') {
+        stage('Install Bearer cli') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -32,8 +33,8 @@ pipeline {
             }
             steps {
                 sh '''
-                    # Run Retire.js to check for outdated or vulnerable libraries
-                    retire --path . 
+                    curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh
+                    bearer scan
                 '''
             }
         }
