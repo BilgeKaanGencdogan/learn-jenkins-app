@@ -6,60 +6,23 @@ pipeline {
         NETLIFY_AUTH_TOKEN = credentials('token-netlify')
     }
 
-    stages 
-    {
-        stage('Checkout') {
-            steps {
-                checkout scm
-                sh 'whoami'  
-
-            }
-        }
-
-      stage('Install Dependencies') {
-    steps {
-        script {
-            // Install Node.js 18.x on Rocky Linux
-            sh '''
-                # Enable EPEL repository
-                dnf install -y epel-release
-
-                # Install Node.js 18.x from NodeSource
-                curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
-                dnf install -y nodejs
-
-                # Verify the installation
-                node --version
-                npm --version
-
-                # Install Retire.js globally
-                npm install -g retire
-
-                # Verify Retire.js installation
-                which retire
-            '''
-        }
-    }
-}
-
-        stage('Retire.js Vulnerability Check') {
-            steps {
-                script {
-                    // Run Retire.js to check for vulnerabilities
-                    sh 'retire --path . || exit 1'
-                }
-            }
-        }
-
+    stages {
         stage('Build') {
-            steps {
-                script {
-                    // Install project dependencies and build the project
-                    sh '''
-                        npm ci --unsafe-perm
-                        npm run build
-                    '''
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
                 }
+            }
+            steps {
+                sh '''
+                    ls -la
+                    node --version
+                    npm --version
+                    npm ci --unsafe-perm
+                    npm run build
+                    ls -la
+                '''
             }
         }
 
@@ -78,8 +41,18 @@ pipeline {
         stage('Tests') {
             parallel {
                 stage('Unit tests') {
+                    agent {
+                        docker {
+                            image 'node:18-alpine'
+                            reuseNode true
+                        }
+                    }
+
                     steps {
-                        sh 'npm run test:ci'
+                        sh '''
+                            #test -f build/index.html
+                            npm run test:ci
+                        '''
                     }
 
                     post {
@@ -92,21 +65,26 @@ pipeline {
         }
 
         stage('Deploy') {
-            steps {
-                script {
-                    // Install Netlify CLI and deploy
-                    sh '''
-
-                        # Install netlify-cli locally
-                        npm install netlify-cli -g
-
-                        # Deploy using netlify-cli
-                        node_modules/.bin/netlify --version
-                        echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-                        node_modules/.bin/netlify status
-                        node_modules/.bin/netlify deploy --dir=build --prod
-                    '''
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                   
+                    reuseNode true
                 }
+            }
+            steps {
+                sh '''
+                   
+
+                    # Install netlify-cli locally
+                    npm install netlify-cli -g 
+
+                    # Deploy using netlify-cli
+                    node_modules/.bin/netlify --version
+                    echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+                    node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build --prod
+                '''
             }
         }
     }
@@ -118,7 +96,3 @@ pipeline {
         }
     }
 }
-
-
-
-
