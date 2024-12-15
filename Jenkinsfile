@@ -36,6 +36,7 @@ pipeline {
                 sh '''
                      apk add --no-cache curl git
                     curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh
+                   ls -la ./bin
                     ./bin/bearer scan .
                 '''
             }
