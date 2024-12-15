@@ -7,6 +7,36 @@ pipeline {
     }
 
     stages {
+        stage('Install Retire.js') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    args '--user root'  // Make sure the container is running as root
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    # Install retire.js globally
+                    npm install -g retire
+                '''
+            }
+        }
+        stage('Retire.js Vulnerability Check') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    args '--user root'  // Make sure the container is running as root
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    # Run Retire.js to check for outdated or vulnerable libraries
+                    retire --path . 
+                '''
+            }
+        }
         stage('Build') {
             agent {
                 docker {
@@ -85,6 +115,7 @@ pipeline {
 
                     # Deploy using netlify-cli
                     echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+                    netlify login
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --prod
                     '''
