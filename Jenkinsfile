@@ -77,25 +77,42 @@ pipeline {
             }
             steps {
                 sh '''
-                   
+                     # Install netlify-cli locally in the project
+                    npm install netlify-cli --unsafe-perm
 
-                    # Install netlify-cli locally
-                    npm install netlify-cli -g 
+                    # Verify installation
+                    node_modules/.bin/netlify --version
 
                     # Deploy using netlify-cli
-                    node_modules/.bin/netlify --version
                     echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --prod
-                '''
+                    '''
+
             }
         }
     }
 
-    post {
-        always {
-            // Publish Playwright report
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+   post {
+    always {
+        script {
+            // Ensure the directory exists and has proper permissions
+            sh '''
+                if [ -d "playwright-report" ]; then
+                    echo "Playwright report directory exists."
+                else
+                    echo "Playwright report directory does not exist. Creating it."
+                    mkdir -p playwright-report
+                fi
+
+                # Ensure the directory has the right permissions
+                chmod -R 755 playwright-report
+            '''
         }
+
+        // Publish Playwright report
+        publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
     }
+}
+
 }
