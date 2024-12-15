@@ -11,7 +11,7 @@ pipeline {
             agent {
                 docker {
                     image 'node:18-alpine'
-                    args '--user root'  // Make sure the container is running as root
+                    args '--user root'
                     reuseNode true
                 }
             }
@@ -23,21 +23,23 @@ pipeline {
                 '''
             }
         }
-        stage('Install Bearer cli') {
+
+        stage('Install Bearer CLI') {
             agent {
                 docker {
                     image 'node:18-alpine'
-                    args '--user root'  // Make sure the container is running as root
+                    args '--user root'
                     reuseNode true
                 }
             }
             steps {
                 sh '''
                     curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh
-                    bearer scan
+                    ./bin/bearer scan .
                 '''
             }
         }
+
         stage('Build') {
             agent {
                 docker {
@@ -84,7 +86,6 @@ pipeline {
 
                     steps {
                         sh '''
-                            #test -f build/index.html
                             npm run test:ci
                         '''
                     }
@@ -120,31 +121,29 @@ pipeline {
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --prod
                     '''
-
             }
         }
     }
 
-   post {
-    always {
-        script {
-            // Ensure the directory exists and has proper permissions
-            sh '''
-                if [ -d "playwright-report" ]; then
-                    echo "Playwright report directory exists."
-                else
-                    echo "Playwright report directory does not exist. Creating it."
-                    mkdir -p playwright-report
-                fi
+    post {
+        always {
+            script {
+                // Ensure the directory exists and has proper permissions
+                sh '''
+                    if [ -d "playwright-report" ]; then
+                        echo "Playwright report directory exists."
+                    else
+                        echo "Playwright report directory does not exist. Creating it."
+                        mkdir -p playwright-report
+                    fi
 
-                # Ensure the directory has the right permissions
-                chmod -R 755 playwright-report
-            '''
+                    # Ensure the directory has the right permissions
+                    chmod -R 755 playwright-report
+                '''
+            }
+
+            // Publish Playwright report
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
         }
-
-        // Publish Playwright report
-        publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
     }
-}
-
 }
