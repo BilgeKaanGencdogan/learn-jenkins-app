@@ -109,17 +109,7 @@ pipeline {
             }
             steps {
                 sh '''
-                     # Install netlify-cli locally in the project
-                    npm install netlify-cli --unsafe-perm
-
-                    # Verify installation
-                    node_modules/.bin/netlify --version
-
-                    # Deploy using netlify-cli
-                    echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-                    netlify login
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod
+                    echo "Deploying...."
                     '''
             }
         }
