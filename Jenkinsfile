@@ -143,8 +143,8 @@ pipeline {
                         mkdir -p playwright-report
                     fi
 
-                    # Ensure the directory has the right permissions
-                    chmod -R 755 playwright-report
+                    chmod -R 777 /var/lib/jenkins/workspace/learn-jenkins-app/playwright-report
+                    chmod -R 777 /var/lib/jenkins/jobs/learn-jenkins-app/htmlreports/
                 '''
             }
 
