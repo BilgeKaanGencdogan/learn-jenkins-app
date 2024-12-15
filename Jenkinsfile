@@ -152,4 +152,20 @@ pipeline {
     //         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
     //     }
     // }
+
+      post {
+        always {
+            // Create an issue on GitHub if the build fails
+            if (currentBuild.result == 'FAILURE') {
+                githubIssue(
+                    repo: 'https://github.com/BilgeKaanGencdogan/learn-jenkins-app',
+                    branch: 'main',
+                    title: 'Build failed',
+                    body: 'The build failed with the following error: ${currentBuild.result}',
+                    labels: ['build-failure'],
+                    assignee: 'BilgeKaanGencdogan'
+                )
+            }
+        }
+    }
 }
