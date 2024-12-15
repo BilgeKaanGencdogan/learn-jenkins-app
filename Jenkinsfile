@@ -11,6 +11,7 @@ pipeline {
             agent {
                 docker {
                     image 'node:18-alpine'
+                    args '--user root'
                     reuseNode true
                 }
             }
@@ -45,6 +46,7 @@ pipeline {
                     agent {
                         docker {
                             image 'node:18-alpine'
+                            args '--user root'
                             reuseNode true
                         }
                     }
@@ -69,7 +71,7 @@ pipeline {
             agent {
                 docker {
                     image 'node:18-alpine'
-                   
+                    args '--user root'
                     reuseNode true
                 }
             }
