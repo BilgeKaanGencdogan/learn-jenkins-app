@@ -131,25 +131,25 @@ pipeline {
         }
     }
 
-    post {
-        always {
-            script {
-                // Ensure the directory exists and has proper permissions
-                sh '''
-                    if [ -d "playwright-report" ]; then
-                        echo "Playwright report directory exists."
-                    else
-                        echo "Playwright report directory does not exist. Creating it."
-                        mkdir -p playwright-report
-                    fi
+    // post {
+    //     always {
+    //         script {
+    //             // Ensure the directory exists and has proper permissions
+    //             sh '''
+    //                 if [ -d "playwright-report" ]; then
+    //                     echo "Playwright report directory exists."
+    //                 else
+    //                     echo "Playwright report directory does not exist. Creating it."
+    //                     mkdir -p playwright-report
+    //                 fi
 
-                    chmod -R 777 /var/lib/jenkins/workspace/learn-jenkins-app/playwright-report
+    //                 chmod -R 777 /var/lib/jenkins/workspace/learn-jenkins-app/playwright-report
                     
-                '''
-            }
+    //             '''
+    //         }
 
-            // Publish Playwright report
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
-        }
-    }
+    //         // Publish Playwright report
+    //         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+    //     }
+    // }
 }
