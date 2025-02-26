@@ -15,6 +15,7 @@ pipeline {
                     source "$NVM_DIR/nvm.sh"
                     nvm install $NODE_VERSION
                     nvm use $NODE_VERSION
+                    dnf install npm
                 '''
             }
         }
@@ -24,7 +25,7 @@ pipeline {
                     source "$NVM_DIR/nvm.sh"
                     node --version
                     whoami
-                    dnf install npm
+                 
                     npm run build
                     ls -la
                 '''
