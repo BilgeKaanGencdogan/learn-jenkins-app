@@ -21,7 +21,6 @@ pipeline {
         stage('Build') {
             steps {
                 sh '''
-                    source "$NVM_DIR/nvm.sh"
                     node --version
                     whoami
                     npm run build
