@@ -1,10 +1,30 @@
 pipeline {
-    agent { docker { image 'node:18-alpine' } }
+    agent any
+    environment {
+        NVM_DIR = "$HOME/.nvm"
+        NODE_VERSION = "18"
+    }
     stages {
-        stage('build') {
+        stage('Setup Node.js') {
             steps {
-                sh 'node --version'
-                sh 'whoami'
+                sh '''
+                    if [ ! -d "$NVM_DIR" ]; then
+                        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
+                        source "$NVM_DIR/nvm.sh"
+                    fi
+                    source "$NVM_DIR/nvm.sh"
+                    nvm install $NODE_VERSION
+                    nvm use $NODE_VERSION
+                '''
+            }
+        }
+        stage('Build') {
+            steps {
+                sh '''
+                    source "$NVM_DIR/nvm.sh"
+                    node --version
+                    whoami
+                '''
             }
         }
     }
