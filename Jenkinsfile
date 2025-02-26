@@ -26,6 +26,7 @@ pipeline {
                     node --version
                     whoami
                     sudo dnf install -y npm
+                    npm install
                     npm run build
                     ls -la
                 '''
