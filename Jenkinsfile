@@ -25,7 +25,7 @@ pipeline {
                     source "$NVM_DIR/nvm.sh"
                     node --version
                     whoami
-                    sudo dnf install npm
+                    sudo dnf install -y npm
                     npm run build
                     ls -la
                 '''
