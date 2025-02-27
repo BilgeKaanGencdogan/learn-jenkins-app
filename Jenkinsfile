@@ -57,7 +57,7 @@ pipeline {
                     -f 'ALL' 
                     --prettyPrint''', odcInstallation: 'My-OWASP-Dependency-Check'
                 
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
 
