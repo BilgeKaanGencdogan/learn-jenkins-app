@@ -51,35 +51,28 @@ pipeline {
 
         stage('OWASP Dependency-Check Vulnerabilities') {
     steps {
+        dependencyCheck additionalArguments: '''
+            -o './dependency-check'
+            -s './'
+            -f 'XML'
+            --prettyPrint''',
+            odcInstallation: 'My-OWASP-Dependency-Check'
+        
         script {
-            echo "Running OWASP Dependency-Check..."
+            echo "Setting permissions on output directory..."
+            sh 'chmod -R 755 ./dependency-check || true'
             
-            
-            sh '''
-                dependency-check \
-                -o './dependency-check' \
-                -s './' \
-                -f 'XML' \
-                --prettyPrint
-            '''
-
-            
-            echo "Setting permissions for dependency-check directory..."
-            sh 'chmod -R 755 ./dependency-check'
-            
-            
-            echo "Listing files in dependency-check directory:"
+            echo "Listing report directory..."
             sh 'ls -R ./dependency-check || true'
 
-            
-            echo "Checking for report existence:"
+            echo "Checking for XML report..."
             sh 'ls -l ./dependency-check/dependency-check-report.xml || true'
         }
 
-        
         dependencyCheckPublisher pattern: 'dependency-check/dependency-check-report.xml'
     }
 }
+
 
 
 
