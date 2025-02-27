@@ -49,7 +49,8 @@ pipeline {
             }
         }
 
-        stage('OWASP Dependency-Check Vulnerabilities') {
+        stage('OWASP Dependency-Check Vulnerabilities') 
+        {
     steps {
         dependencyCheck additionalArguments: ''' 
             -o './dependency-check'
@@ -58,11 +59,7 @@ pipeline {
             --prettyPrint''', 
             odcInstallation: 'My-OWASP-Dependency-Check'
         
-        // List files in the output directory
-        sh 'ls -R ./dependency-check'
 
-        // Check if the XML report exists
-        sh 'ls -l ./dependency-check/dependency-check-report.xml'
 
         dependencyCheckPublisher pattern: 'dependency-check/dependency-check-report.xml'
     }
