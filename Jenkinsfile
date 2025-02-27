@@ -60,7 +60,8 @@ pipeline {
                 
                 sh 'ls -R ./dependency-check'
                 
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                dependencyCheckPublisher pattern: 'dependency-check/dependency-check-report.xml'
+
             }
         }
 
