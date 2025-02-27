@@ -49,7 +49,8 @@ pipeline {
             }
         }
 
-        stage('OWASP Dependency-Check Vulnerabilities') {
+        stage('OWASP Dependency-Check Vulnerabilities') 
+        {
     steps {
         dependencyCheck additionalArguments: '''
             -o './dependency-check'
