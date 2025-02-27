@@ -50,16 +50,30 @@ pipeline {
         }
 
         stage('OWASP Dependency-Check Vulnerabilities') {
-            steps {
-                dependencyCheck additionalArguments: ''' 
-                    -o './'
-                    -s './'
-                    -f 'ALL' 
-                    --prettyPrint''', odcInstallation: 'My-OWASP-Dependency-Check'
-                
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-            }
+    steps {
+        script {
+            echo "Running OWASP Dependency-Check..."
+            
+            // Run OWASP Dependency-Check
+            dependencyCheck additionalArguments: '''
+                -o './dependency-check-reports' 
+                -s './' 
+                -f 'ALL'
+                --prettyPrint
+                --log dependency-check-reports/dependency-check.log
+                --debug
+            ''', odcInstallation: 'My-OWASP-Dependency-Check'
+            
+            // Debug: Verify that the report files were generated
+            sh 'ls -la dependency-check-reports'
+            sh 'cat dependency-check-reports/dependency-check.log || true'
         }
+
+        // Publish OWASP Dependency-Check results
+        dependencyCheckPublisher pattern: 'dependency-check-reports/dependency-check-report.xml'
+    }
+}
+
 
     }
 }
