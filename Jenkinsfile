@@ -59,17 +59,7 @@ pipeline {
             --prettyPrint''',
             odcInstallation: 'My-OWASP-Dependency-Check'
         
-        script {
-            echo "Setting permissions on output directory..."
-            sh 'chmod -R 755 ./dependency-check || true'
-            
-            echo "Listing report directory..."
-            sh 'ls -R ./dependency-check || true'
-
-            echo "Checking for XML report..."
-            sh 'ls -l ./dependency-check/dependency-check-report.xml || true'
-        }
-
+        echo 'ls -la ./dependency-check'
         dependencyCheckPublisher pattern: 'dependency-check/dependency-check-report.xml'
     }
 }
