@@ -49,19 +49,20 @@ pipeline {
             }
         }
 
-        stage('OWASP Dependency-Check Vulnerabilities') {
-    steps {
-        
-        dependencyCheck additionalArguments: ''' 
-            -o './dependency-check'
-            -s './'
-            -f 'ALL' 
-            --prettyPrint''', odcInstallation: 'My-OWASP-Dependency-Check'
-        
-        
-        dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-    }
-}
+        stage('OWASP Dependency-Check Vulnerabilities') 
+        {
+            steps {
+                dependencyCheck additionalArguments: ''' 
+                    -o './dependency-check'
+                    -s './'
+                    -f 'XML'
+                    --prettyPrint''', odcInstallation: 'My-OWASP-Dependency-Check'
+                
+                sh 'ls -R ./dependency-check'
+                
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            }
+        }
 
     }
 }
