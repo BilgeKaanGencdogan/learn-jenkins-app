@@ -19,7 +19,8 @@ pipeline {
                 '''
             }
         }
-        stage('Build') {
+        stage('Build') 
+        {
             steps {
                 sh '''
                     source "$NVM_DIR/nvm.sh"
@@ -32,5 +33,20 @@ pipeline {
                 '''
             }
         }
+        stage('Test') {
+            steps {
+                sh '''
+                    source "$NVM_DIR/nvm.sh"
+                    npm test
+                '''
+            }
+            post {
+                always {
+                    junit 'test-results/junit.xml'
+                }
+            }
+        }
+
+
     }
 }
