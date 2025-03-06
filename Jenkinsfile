@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         NVM_DIR = "$HOME/.nvm"
-        NODE_VERSION = "22"
+       
     }
     stages {
         stage('Setup Node.js') {
@@ -14,8 +14,8 @@ pipeline {
                             source "$NVM_DIR/nvm.sh"
                         fi
                         source "$NVM_DIR/nvm.sh"
-                        nvm install $NODE_VERSION
-                        nvm use $NODE_VERSION
+                        nvm install 22
+                        nvm use 22
                     '''
                 }
             }
