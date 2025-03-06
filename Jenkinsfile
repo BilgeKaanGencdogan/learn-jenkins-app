@@ -2,16 +2,16 @@ pipeline {
     agent any
     environment {
         NVM_DIR = "$HOME/.nvm"
-        NODE_VERSION = "18"
+        NODE_VERSION = "22"
     }
     stages {
         stage('Setup Node.js') {
             steps {
                 script {
-                    // Install NVM and Node.js
                     sh '''
                         if [ ! -d "$NVM_DIR" ]; then
                             curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+                            \. "$HOME/.nvm/nvm.sh"
                             source "$NVM_DIR/nvm.sh"
                         fi
                         source "$NVM_DIR/nvm.sh"
@@ -61,6 +61,7 @@ pipeline {
             steps {
                 sh '''
                     npm install -g retire
+                    sudo chown -R jenkins:jenkins /usr/local/lib/node_modules
                     retire
                 '''
             }
