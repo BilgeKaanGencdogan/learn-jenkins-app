@@ -11,7 +11,6 @@ pipeline {
                     sh '''
                         if [ ! -d "$NVM_DIR" ]; then
                             curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-                            \. "$HOME/.nvm/nvm.sh"
                             source "$NVM_DIR/nvm.sh"
                         fi
                         source "$NVM_DIR/nvm.sh"
