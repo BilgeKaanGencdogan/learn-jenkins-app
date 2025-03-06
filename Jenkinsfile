@@ -77,7 +77,7 @@ pipeline {
             steps {
                 sh '''
                     whoami
-                    npm install -g retire
+                    npm install retire
                     retire
                 '''
             }
