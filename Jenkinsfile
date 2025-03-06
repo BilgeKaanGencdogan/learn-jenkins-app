@@ -72,6 +72,17 @@ pipeline {
         /* -> error: Collecting Dependency-Check artifact
             Unable to find Dependency-Check reports to parse*/
 
+        stage('Install Retire.js') {
+        
+            steps {
+                sh '''
+                    whoami
+                    npm install -g retire
+                    retire
+                '''
+            }
+        }
+
      
     }
 }
