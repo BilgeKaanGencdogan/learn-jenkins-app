@@ -8,6 +8,7 @@ pipeline {
         stage('Setup Node.js') {
             steps {
                 script {
+                    
                     // Install NVM and Node.js
                     sh '''
                         if [ ! -d "$NVM_DIR" ]; then
