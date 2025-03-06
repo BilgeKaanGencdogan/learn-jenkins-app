@@ -1,10 +1,12 @@
-pipeline {
+pipeline 
+{
     agent any
     environment {
         NVM_DIR = "$HOME/.nvm"
-       
+        NODE_VERSION = "22"
     }
-    stages {
+    stages 
+    {
         stage('Setup Node.js') {
             steps {
                 script {
@@ -14,9 +16,9 @@ pipeline {
                             source "$NVM_DIR/nvm.sh"
                         fi
                         source "$NVM_DIR/nvm.sh"
-                        nvm install 22
-                        nvm use 22
-                        node -v 
+                        nvm install $NODE_VERSION
+                        nvm use $NODE_VERSION
+                        node -v  # Verify node version
                     '''
                 }
             }
@@ -59,13 +61,18 @@ pipeline {
         }
     stage('Install Retire.js') {
             steps {
-                sh '''
-                    npm install -g retire
-                    sudo chown -R jenkins:jenkins /usr/local/lib/node_modules
-                    retire
-                '''
+                script {
+                    // Ensure the correct Node version is being used
+                    sh '''
+                        source "$NVM_DIR/nvm.sh"
+                        nvm use $NODE_VERSION
+                        node -v   # Verify node version
+                        npm install -g retire
+                        sudo chown -R jenkins:jenkins /usr/local/lib/node_modules
+                        retire
+                    '''
+                }
             }
-        }
 
         
 
