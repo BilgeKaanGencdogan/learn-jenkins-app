@@ -4,15 +4,15 @@ pipeline {
         NVM_DIR = "$HOME/.nvm"
         NODE_VERSION = "18"
     }
-  stages {
+    stages {
         stage('Setup Node.js') {
             steps {
                 script {
-                    
                     // Install NVM and Node.js
                     sh '''
                         if [ ! -d "$NVM_DIR" ]; then
                             curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+                            source "$NVM_DIR/nvm.sh"
                         fi
                         source "$NVM_DIR/nvm.sh"
                         nvm install $NODE_VERSION
@@ -28,7 +28,6 @@ pipeline {
                     // Build with Node.js
                     sh '''
                         source "$NVM_DIR/nvm.sh"
-                        nvm use $NODE_VERSION
                         node --version
                         whoami
                         sudo dnf install -y npm
@@ -46,7 +45,6 @@ pipeline {
                     // Run tests
                     sh '''
                         source "$NVM_DIR/nvm.sh"
-                        nvm use $NODE_VERSION
                         npm test
                     '''
                 }
@@ -60,18 +58,24 @@ pipeline {
             }
         }
 
-        stage('Install Retire.js') {
-            steps {
-                script {
-                    sh '''
-                        source "$NVM_DIR/nvm.sh"
-                        nvm use $NODE_VERSION
-                        whoami
-                        npm install retire
-                        retire
-                    '''
-                }
-            }
-        }
+        
+
+        //  stage('OWASP Dependency-Check Vulnerabilities') {
+        //     steps {
+        //         dependencyCheck additionalArguments: ''' 
+        //             -o './'
+        //             -s './'
+        //             -f 'ALL' 
+        //             --prettyPrint''', odcInstallation: 'My-OWASP-Dependency-Check'
+                
+        //         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+        //     }
+        // }
+        /* -> error: Collecting Dependency-Check artifact
+            Unable to find Dependency-Check reports to parse*/
+
+        
+
+     
     }
 }
