@@ -59,7 +59,7 @@ pipeline
                 }
             }
         }
-    stage('Install Retire.js') {
+ stage('Install Retire.js') {
             steps {
                 script {
                     // Ensure the correct Node version is being used
@@ -73,25 +73,9 @@ pipeline
                     '''
                 }
             }
-
+        }
         
 
-        //  stage('OWASP Dependency-Check Vulnerabilities') {
-        //     steps {
-        //         dependencyCheck additionalArguments: ''' 
-        //             -o './'
-        //             -s './'
-        //             -f 'ALL' 
-        //             --prettyPrint''', odcInstallation: 'My-OWASP-Dependency-Check'
-                
-        //         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-        //     }
-        // }
-        /* -> error: Collecting Dependency-Check artifact
-            Unable to find Dependency-Check reports to parse*/
 
-        
-
-     
     }
 }
