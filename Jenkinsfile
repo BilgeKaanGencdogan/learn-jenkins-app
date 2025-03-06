@@ -59,7 +59,8 @@ pipeline
                 }
             }
         }
- stage('Install Retire.js') {
+        stage('Install Retire.js') 
+        {
             steps {
                 script {
                     // Ensure the correct Node version is being used
