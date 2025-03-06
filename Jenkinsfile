@@ -58,49 +58,20 @@ pipeline {
             }
         }
 
-         stage('OWASP Dependency-Check Vulnerabilities') {
-            steps {
-                dependencyCheck additionalArguments: ''' 
-                    -o './'
-                    -s './'
-                    -f 'ALL' 
-                    --prettyPrint''', odcInstallation: 'My-OWASP-Dependency-Check'
-                
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-            }
-        }
-
-        // stage('OWASP Dependency-Check Vulnerabilities') 
-        // {
+        //  stage('OWASP Dependency-Check Vulnerabilities') {
         //     steps {
-        //         script {
-        //             // Run OWASP Dependency-Check
-        //             sh '''
-        //                 # Ensure Dependency-Check tool is installed and available
-        //                 echo "Running OWASP Dependency-Check..."
-
-        //                 # Run Dependency-Check tool in the project directory
-        //                 dependency-check \
-        //                     -o './dependency-check' \
-        //                     -s './' \
-        //                     -f 'XML' \
-        //                     --prettyPrint
-                        
-        //                 # Ensure the output directory is correct and accessible
-        //                 ls -la ./dependency-check
-        //             '''
-        //         }
-        //     }
-        //     post {
-        //         always {
-        //             // Publish the Dependency-Check report (if it exists)
-        //             dependencyCheckPublisher pattern: 'dependency-check/dependency-check-report.xml'
-
-        //             // List the files in the dependency-check folder for debugging
-        //             echo "Listing dependency-check directory:"
-        //             sh 'ls -la ./dependency-check'
-        //         }
+        //         dependencyCheck additionalArguments: ''' 
+        //             -o './'
+        //             -s './'
+        //             -f 'ALL' 
+        //             --prettyPrint''', odcInstallation: 'My-OWASP-Dependency-Check'
+                
+        //         dependencyCheckPublisher pattern: 'dependency-check-report.xml'
         //     }
         // }
+        /* -> error: Collecting Dependency-Check artifact
+            Unable to find Dependency-Check reports to parse*/
+
+     
     }
 }
