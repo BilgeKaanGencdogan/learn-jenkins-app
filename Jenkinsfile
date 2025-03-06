@@ -57,6 +57,14 @@ pipeline {
                 }
             }
         }
+    stage('Install Retire.js') {
+            steps {
+                sh '''
+                    npm install -g retire
+                    retire
+                '''
+            }
+        }
 
         
 
