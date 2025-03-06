@@ -16,6 +16,7 @@ pipeline {
                         source "$NVM_DIR/nvm.sh"
                         nvm install 22
                         nvm use 22
+                        node -v 
                     '''
                 }
             }
