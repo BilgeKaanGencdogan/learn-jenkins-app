@@ -33,7 +33,7 @@ pipeline {
                         nvm use $NODE_VERSION
                         node --version  
                         whoami
-                        # Ensure npm is installed
+                        
                         npm install
                         npm run build
                         ls -la  
