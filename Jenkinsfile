@@ -53,7 +53,7 @@ pipeline
             }
             post {
                 always {
-                    // Collect JUnit results and print the directory listing
+                   
                     junit 'test-results/junit.xml'
                     sh 'ls -la'
                 }
@@ -63,14 +63,9 @@ pipeline
         {
             steps {
                 script {
-                    // Ensure the correct Node version is being used
                     sh '''
-                        source "$NVM_DIR/nvm.sh"
-                        nvm use $NODE_VERSION
-                        node -v   # Verify node version
-                        npm install -g retire
-                        sudo chown -R jenkins:jenkins /usr/local/lib/node_modules
-                        retire
+                    npm install -g retire
+                    retire
                     '''
                 }
             }
