@@ -61,7 +61,8 @@ pipeline {
             }
         }
 
-        stage('Install Retire.js') {
+        stage('Install Retire.js') 
+        {
             steps {
                 script {
                   
@@ -70,6 +71,20 @@ pipeline {
                         nvm use $NODE_VERSION
                         npm install -g retire  
                         retire  
+                    '''
+                }
+            }
+        }
+            stage('Install bearer cli') 
+        {
+            steps {
+                script {
+                  
+                    sh '''
+                        source "$NVM_DIR/nvm.sh"
+                        nvm use $NODE_VERSION
+                        curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh
+                        bearer scan . 
                     '''
                 }
             }
