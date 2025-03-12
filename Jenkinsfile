@@ -84,7 +84,7 @@ pipeline {
                         source "$NVM_DIR/nvm.sh"
                         nvm use $NODE_VERSION
                         curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh
-                        bearer scan . 
+                        ./bin/bearer scan .
                     '''
                 }
             }
