@@ -61,20 +61,20 @@ pipeline {
             }
         }
 
-        stage('Install Retire.js') 
-        {
-            steps {
-                script {
+        // stage('Install Retire.js') 
+        // {
+        //     steps {
+        //         script {
                   
-                    sh '''
-                        source "$NVM_DIR/nvm.sh"
-                        nvm use $NODE_VERSION
-                        npm install -g retire  
-                        retire  
-                    '''
-                }
-            }
-        }
+        //             sh '''
+        //                 source "$NVM_DIR/nvm.sh"
+        //                 nvm use $NODE_VERSION
+        //                 npm install -g retire  
+        //                 retire  
+        //             '''
+        //         }
+        //     }
+        // }
             stage('Install bearer cli') 
         {
             steps {
